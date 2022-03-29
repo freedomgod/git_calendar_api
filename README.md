@@ -74,3 +74,15 @@ https://github.com/Zfour/friends_link_list_api
 https://python-github-calendar-api-zfour.vercel.app/api/?zfour
 
 如果显示数据则说明API配置成功。
+
+
+
+## 更新
+
+使用Flask重新实现了一下获取提交数据的函数，支持用年份参数获取指定一年的commit数据。
+
+```
+按照vercel: npm i -g vercel
+到指定目录执行: vercel
+```
+

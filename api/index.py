@@ -11,10 +11,10 @@ from flask import Flask, request, Response
 app = Flask(__name__)
 
 
-@app.route('/api', methods=['get'])
+@app.route('/api', methods=['get', 'post'])
 def do_get():
     """
-    路径格式大约为 /api/freedomgod?y=2021
+    路径格式大约为 /api?usernamefreedomgod?year=2021
     :param user_name:
     :return:
     """
