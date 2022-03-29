@@ -1,38 +1,57 @@
-# -*- coding: UTF-8 -*-
-import requests
 import re
-from http.server import BaseHTTPRequestHandler
 import json
+import requests
+from gevent import pywsgi
+from datetime import datetime
+from flask import Flask, request, Response
+
+
+# 实例化api，把当前这个python文件当作一个服务，__name__代表当前这个python文件
+app = Flask(__name__)
+
 
 def list_split(items, n):
     return [items[i:i + n] for i in range(0, len(items), n)]
-def getdata(name):
-    gitpage = requests.get("https://github.com/" + name)
-    data = gitpage.text
-    datadatereg = re.compile(r'data-date="(.*?)" data-level')
-    datacountreg = re.compile(r'data-count="(.*?)" data-date')
-    datadate = datadatereg.findall(data)
-    datacount = datacountreg.findall(data)
-    datacount = list(map(int, datacount))
-    contributions = sum(datacount)
+
+
+def get_data(name, year=None):
+    if year:
+        url = "https://github.com/" + name + f"?from={year}-01-01&to={year}-12-31"
+    else:
+        url = "https://github.com/" + name
+    git_page = requests.get(url)
+    data = git_page.text
+    data_date_reg = re.compile(r'data-date="(.*?)" data-level')
+    data_count_reg = re.compile(r'data-count="(.*?)" data-date')
+    data_date = data_date_reg.findall(data)
+    data_count = data_count_reg.findall(data)
+    data_count = list(map(int, data_count))
+    contributions = sum(data_count)
     datalist = []
-    for index, item in enumerate(datadate):
-        itemlist = {"date": item, "count": datacount[index]}
-        datalist.append(itemlist)
-    datalistsplit = list_split(datalist, 7)
-    returndata = {
+    for index, item in enumerate(data_date):
+        item_list = {"date": item, "count": data_count[index]}
+        datalist.append(item_list)
+    data_list_split = list_split(datalist, 7)
+    return_data = {
         "total": contributions,
-        "contributions": datalistsplit
+        "contributions": data_list_split
     }
-    return returndata
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        path = self.path
-        user = path.split('?')[1]
-        data = getdata(user)
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Content-type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps(data).encode('utf-8'))
-        return
+    return return_data
+
+
+@app.route('/api/<user_name>', methods=['get'])
+def do_get(user_name):
+    """
+    路径格式大约为 /api/freedomgod?y=2021
+    :param user_name:
+    :return:
+    """
+    cur_year = request.args.get('y', datetime.now().year)
+    data = get_data(user_name, cur_year)
+    return Response(json.dumps(data), content_type='application/json')
+
+
+if __name__ == "__main__":
+    server = pywsgi.WSGIServer(('0.0.0.0', 5000), app)
+    server.serve_forever()
+    app.run()
