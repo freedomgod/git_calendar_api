@@ -39,14 +39,15 @@ def get_data(name, year=None):
     return return_data
 
 
-@app.route('/api/<user_name>', methods=['get'])
-def do_get(user_name):
+@app.route('/api', methods=['get'])
+def do_get():
     """
     路径格式大约为 /api/freedomgod?y=2021
     :param user_name:
     :return:
     """
-    cur_year = request.args.get('y', datetime.now().year)
+    user_name = request.args.get("username", "freedomgod")
+    cur_year = request.args.get("year", datetime.now().year)
     data = get_data(user_name, cur_year)
     return Response(json.dumps(data), content_type='application/json')
 
