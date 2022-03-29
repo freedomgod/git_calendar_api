@@ -1,8 +1,6 @@
-import re
 import json
-import requests
 from gevent import pywsgi
-from api.util import list_split, get_data
+from api.util import get_data
 from datetime import datetime
 from flask import Flask, request, Response
 

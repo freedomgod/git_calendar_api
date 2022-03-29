@@ -79,10 +79,13 @@ https://python-github-calendar-api-zfour.vercel.app/api/?zfour
 
 ## 更新
 
-使用Flask重新实现了一下获取提交数据的函数，支持用年份参数获取指定一年的commit数据。
+使用Flask重新实现了一下获取提交数据的函数，支持用年份参数获取指定一年的commit数据。请求路径大致是`https://git-calendar-api.vercel.app/api?username=freedomgod?year=2021`
 
 ```
 按照vercel: npm i -g vercel
 到指定目录执行: vercel
+
+生成依赖文件：
+pipreqs target_path --encoding=utf-8 --force
 ```
 
